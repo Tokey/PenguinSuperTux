@@ -41,7 +41,9 @@ So each checkpoint produces one row in each sheet, with (nearly) the same `Times
 Both rows start with the same player ID: an MD5 hash of a random number (`Scoreboard.player_id`). A new ID is generated each time the page is loaded or refreshed. It stays the same if the player returns to the title screen without reloading. Use it to group a player's rows across both sheets.
 
 ### Lag conditions
-The lag values `[0, 75, 150, 225]` (milliseconds) are shuffled once per page load. The game then cycles through them in that order, moving to the next value after each QoE submit. The lag is the length of the frame freeze (`OS.delay_msec`) applied while the player is inside a lag zone (events `A`/`B` below).
+The lag values `[0, 75, 150, 225]` (milliseconds) are shuffled once per page load. The game then cycles through them in that order, moving to the next value after each QoE submit. The lag value is the length of a single frame freeze (`OS.delay_msec` in [`TuxSM.apply_lag()`](SourceCode/scenes/player/TuxSM.gd)). With lag `0`, no spike happens. The freeze is triggered:
+- when Tux **leaves** a lag zone (event `B`) while moving, after a random 10–69 ms delay (`lag_min_delay`/`lag_max_delay` in `isp.tscn`),
+- on the first jump after each (re)spawn.
 
 ## Summary log format
 Example (sample row):
@@ -106,8 +108,8 @@ To parse an entry, use the regex `^(\d{6})([A-K])?([a-g])?(\d{4})?(\d{2})?$`. Af
 
 | Code | Event | Logged when |
 |---|---|---|
-| `A` | `DELAY_ENTER` | Tux enters a lag zone (frametime spikes start) |
-| `B` | `DELAY_EXIT` | Tux leaves a lag zone |
+| `A` | `DELAY_ENTER` | Tux enters a lag zone |
+| `B` | `DELAY_EXIT` | Tux leaves a lag zone (the spike fires shortly after) |
 | `C` | `CHECKPOINT` | A checkpoint is activated |
 | `D` | `FINISH` | Tux stops at the finish (reset checkpoint) and the level resets |
 | `E` | `DEATH` | Tux dies |
@@ -134,7 +136,9 @@ To parse an entry, use the regex `^(\d{6})([A-K])?([a-g])?(\d{4})?(\d{2})?$`. Af
 - **Repeated events can be lost.** If an event is identical to the previous entry (same event, state, coins and zone), nothing changed, so the entry is dropped entirely, timer included.
 - **Whole-second timer values are encoded wrongly.** When the time left is a whole number (e.g. exactly 200 s at the start), the millisecond digits are filled with the seconds digits: `200200` means 200.000 s, not 200.200 s.
 - **Timer resets.** When the level timer runs out, entries are logged at `000000` until the level resets and the timer jumps back up. That's why the summary's section time can be negative.
-- Events are not recorded while the Thank You screen is showing or before Tux exists.
+- Events are not recorded when Tux doesn't exist (e.g. on menus or the Thank You screen).
+- **Uploads are fire-and-forget.** Nothing checks whether Google accepted a row. The event buffer is cleared even if the request failed, or was refused because the previous upload was still in progress, so those events are lost. A very long section could also make the URL too long for Google to accept.
+- Totals in the summary (jumps, presses, deaths, time and entries per zone, checkpoint count) are **cumulative for the whole page session**, not per section. Subtract the previous row to get per-section values.
 
 ## Other network requests
 - **Leaderboard** ([`ThankYou.gd`](SourceCode/scenes/menus/ThankYou.gd)): at the end of the study, if the player clicks **Save Score**, `{datetime, name, score, player_id}` is POSTed as JSON to a Google Apps Script web app (not a Google Form). Nothing is sent if they click "Don't Save".
@@ -146,3 +150,5 @@ To parse an entry, use the regex `^(\d{6})([A-K])?([a-g])?(\d{4})?(\d{2})?$`. Af
 # Known Issues
 - `send_event_log()` and `send_summary_log()` each build a second, unused form URL (`form_url2`). Only the first URL is requested.
 - The form data is put in the URL query string without URL encoding. That's why the `+` signs arrive as spaces.
+- `OLogger.state_type_map` has no code for Tux's `riding` and `win_inside_igloo` states. An event logged in those states raises an error and is dropped.
+- Events after the last checkpoint (e.g. the final stretch to the finish) are never uploaded.
