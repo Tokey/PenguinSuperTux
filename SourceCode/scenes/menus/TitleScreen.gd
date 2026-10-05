@@ -1,0 +1,182 @@
+#  SuperTux - A 2D, Open-Source Platformer Game licensed under GPL-3.0-or-later
+#  Copyright (C) 2022 Alexander Small <alexsmudgy20@gmail.com>
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 3
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+extends Control
+
+export var intro_scene = ""
+export var options_scene = ""
+export var credits_scene = ""
+onready var title_content = $TitleContent
+
+onready var start_game_button = $TitleContent/Menu/VBoxContainer/StartGame
+onready var frame_stutter_button = $TitleContent/Menu/VBoxContainer/FrameStutter
+onready var options_button = $TitleContent/Menu/VBoxContainer/Options
+onready var level_editor_button = $TitleContent/Menu/VBoxContainer/LevelEditor
+onready var credits_button = $TitleContent/Menu/VBoxContainer/Credits
+onready var quit_button = $TitleContent/Menu/VBoxContainer/Quit
+
+onready var new_game_warning = $TitleContent/Menu/NewGameWarning
+onready var options_menu = $OptionsMenu
+onready var start_game_menu = $StartGameMenu
+onready var frame_stutter_menu = $FrameStutterMenu
+
+onready var http_request = $HTTPRequest
+
+export var default_world = "world1"
+
+func _ready():
+	Music.play("Title")
+	
+	Music.set_editor_music(false)
+	ResolutionManager.enable_zoom_in = false
+	
+	Scoreboard.hide()
+	WorldmapManager.reset()
+	
+	# Transfer save-files made in v0.2.0 to the current save directory if they exist.
+	if SaveManager.has_old_savefile():
+		SaveManager.transfer_old_savefile_to_new_save_path()
+	
+	# Hide the "Quit Game" button if we're running the game
+	# inside of the browser (on HTML5) or on mobile devices
+	var is_on_mobile = OS.has_feature("mobile")
+	var is_on_browser = OS.has_feature("HTML5")
+	quit_button.visible = !is_on_browser
+	
+	start_game_button.grab_focus()
+	http_request.connect("request_completed", Global, "get_signature")
+	http_request.request("https://api.ipify.org?format=json")
+	print("AAAAA")
+
+func _on_StartGame_mouse_entered():
+	start_game_button.grab_focus()
+
+func _on_StartGame_pressed():
+	#Global.next_level_lag = 225
+	Global.goto_level("res://scenes/levels/test_rounds/practice.tscn")
+
+func _on_StartGameMenu_popup_hide():
+	title_content.show()
+	start_game_button.grab_focus()
+
+func _on_LevelSelectDebug_pressed():
+	$FileDialog.popup()
+
+func _on_FileDialog_file_selected(path):
+	if path.ends_with(".tscn"):
+		Global.goto_level(path)
+
+func _on_Options_pressed():
+	title_content.hide()
+	options_menu.popup()
+
+func _on_Credits_pressed():
+	Global.goto_scene(credits_scene)
+
+func _on_BossDebug_pressed():
+	Global.goto_level("res://scenes/levels/bonus2/Grumboss.tscn")
+
+func _on_Quit_pressed():
+	get_tree().quit()
+
+# Focus related signals
+
+func _on_Options_mouse_entered():
+	options_button.grab_focus()
+
+func _on_Credits_mouse_entered():
+	credits_button.grab_focus()
+
+func _on_Quit_mouse_entered():
+	quit_button.grab_focus()
+
+func _on_OptionsMenu_popup_hide():
+	title_content.show()
+	options_button.grab_focus()
+
+func _on_LevelEditor_mouse_entered():
+	level_editor_button.grab_focus()
+
+func _on_LevelEditor_pressed():
+	Global.goto_level_editor_main_menu()
+
+# Frame stutters
+
+func _on_FrameStutter_mouse_entered():
+	frame_stutter_button.grab_focus()
+	
+func _on_FrameStutter_pressed():
+	title_content.hide()
+	Scoreboard.goto_practice(0)
+#	Global.goto_level(Scoreboard.practice_data[0].path)
+#	Global.goto_level("res://scenes/levels/framespike/playtest.tscn")
+
+func _on_FrameStutterMenu_popup_hide():
+	title_content.show()
+	frame_stutter_button.grab_focus()
+
+func _on_one_two_two_pressed(val):
+	#Global.next_level_lag = val
+	Global.goto_level("res://scenes/levels/test_rounds/one_two_two_level.tscn")
+
+func _on_three_three_five_pressed(val):
+	#Global.next_level_lag = val
+	Global.goto_level("res://scenes/levels/test_rounds/three_three_five_level.tscn")
+
+func _on_two_five_five_pressed(val):
+	#Global.next_level_lag = val
+	Global.goto_level("res://scenes/levels/test_rounds/two_five_five_level.tscn")
+
+
+func _on_ISP_New_pressed():
+	title_content.hide()
+	
+	Global.last_checkpoint_score = 0
+	Scoreboard.score = 0
+	Global.goto_level("res://scenes/levels/isp/isp_new.tscn")
+	yield(Global, "level_ready")
+	
+	Scoreboard.set_level_timer(Global.current_level.base_time)
+	
+func _on_ISP_pressed():
+	title_content.hide()
+
+	Global.last_camera_backscroll = 0
+	Global.last_checkpoint_score = 0
+	Scoreboard.score = 0
+	#Global.goto_scene("res://scenes/menus/ThankYou.tscn")
+	Global.goto_level("res://scenes/levels/isp/isp.tscn")
+	
+	print("YEILD")
+	
+	yield(Global, "level_ready")
+	
+	print("I AM FUCKING HERE GODDAMNIT")
+	
+	Scoreboard.set_level_timer(Global.current_level.base_time)
+	
+func _on_TitleScreen_resized():
+	# print_debug(OS.get_screen_size()[1])
+	pass
+	# Global.TILE_SIZE = 32 * (OS.get_screen_size()[1] / 1080)
+
+
+func _on_Info_pressed():
+	OS.shell_open(Global.about_url)
+	
+func _on_ScoreBoard_pressed():
+	OS.shell_open(Global.scoreBoard_url)

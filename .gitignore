@@ -23,3 +23,77 @@ mono_crash.*.json
 *.exe
 # Uncomment if your project does not version PCK files as runtime dependencies.
 # *.pck
+
+# Git LFS pointer stubs whose objects were never downloaded from upstream
+# (SuperTux Classic). Their content is missing, so pushing them fails with
+# "Git LFS upload failed ... (missing)". They are source art/audio only and
+# are not used by the Godot project in SourceCode/.
+Media/Images/Background/BridgeOcean/*.xcf
+Media/Images/Background/OilTux/*.xcf
+Media/Images/Bosses/NOLOK/*.xcf
+Media/Images/Characters/*.xcf
+Media/Images/Characters/Tux/Big/*.xcf
+Media/Images/EndSeq/*.xcf
+Media/Images/Enemies/Fish/*.xcf
+Media/Images/Enemies/IceDragon/*.xcf
+Media/Images/Enemies/IceDragon/Drafts/*.xcf
+Media/Images/Enemies/SmartEnemies/*.xcf
+Media/Images/Menu/*.xcf
+Media/Images/Objects/*.xcf
+Media/Images/Particles/Splash/*.xcf
+Media/Images/ReleasePage/*.xcf
+Media/Images/SplashScreen/*.xcf
+Media/Images/Tiles/Blocks/*.xcf
+Media/Images/Tiles/Flag/*.xcf
+Media/Images/Tiles/Lava/*.xcf
+Media/Images/Tiles/Misc/*.xcf
+Media/Images/Tiles/Tilesets/*.xcf
+Media/Images/Tiles/Tilesets/Autotiles/*.xcf
+Media/Images/Tiles/Waterfall/*.xcf
+Media/Images/TouchscreenControls/*.xcf
+Media/Images/UI/*.xcf
+Media/Images/UI/TuxIcon/*.xcf
+Media/Images/Background/Castle/Castle.xcf
+Media/Images/Background/Castle/Castle10.xcf
+Media/Images/Background/Castle/Castle11.xcf
+Media/Images/Background/Castle/Castle12.xcf
+Media/Images/Background/Castle/Castle13.xcf
+Media/Images/Background/Castle/Castle14.xcf
+Media/Images/Background/Castle/Castle15.xcf
+Media/Images/Background/Castle/Castle16.xcf
+Media/Images/Background/Castle/Castle17.xcf
+Media/Images/Background/Castle/Castle18.xcf
+Media/Images/Background/Castle/Castle19.xcf
+Media/Images/Background/Castle/Castle2.xcf
+Media/Images/Background/Castle/Castle20.xcf
+Media/Images/Background/Castle/Castle3.xcf
+Media/Images/Background/Castle/Castle4.xcf
+Media/Images/Background/Castle/Castle5.xcf
+Media/Images/Background/Castle/Castle6.xcf
+Media/Images/Background/Castle/Castle7.xcf
+Media/Images/Background/Castle/Castle8-2.xcf
+Media/Images/Background/Castle/Castle8.xcf
+Media/Images/Background/Castle/Castle9.xcf
+Media/Images/Icon/Icon1.xcf
+Media/Images/Icon/Icon2.xcf
+Media/Images/Icon/Icon3.xcf
+Media/Images/Icon/Icon4.xcf
+Media/Images/Icon/Icon5.xcf
+Media/Images/Icon/Icon6.xcf
+Media/Images/Icon/Icon7.xcf
+Media/Images/Icon/Icon8.xcf
+Media/Images/Icon/Icon9.xcf
+Media/Images/Icon/IconAndroidAdaptive.xcf
+Media/Images/Particles/Sparkle.xcf
+Media/Images/Particles/Sparkle2.xcf
+Media/Images/Particles/cloud.xcf
+Media/Images/Particles/rain.xcf
+Media/Images/Particles/rain2.xcf
+Media/Images/Worldmap/CastleBig.xcf
+Media/Images/Worldmap/CastleBig2.xcf
+Media/Images/Worldmap/CastleTransparent.xcf
+Media/Images/Worldmap/castle.xcf
+Media/Sounds/stalactite_crash.ogg
+
+# macOS metadata
+.DS_Store
