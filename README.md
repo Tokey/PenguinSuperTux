@@ -148,9 +148,3 @@ To parse an entry, use the regex `^(\d{6})([A-K])?([a-g])?(\d{4})?(\d{2})?$`. Af
 
 ## Local CSV logs (not used on web)
 [`autoload/logger.gd`](SourceCode/autoload/logger.gd) still writes `frame_logs`, `event_logs`, `qoe_logs` and `summary_logs` CSVs to `user://logs`. In the HTML5 build `user://` lives inside the player's browser storage (IndexedDB), so researchers can't access these files. The code that flushes them is also commented out, so they contain only headers. Use the Google Forms data instead.
-
-# Known Issues
-- `send_event_log()` and `send_summary_log()` each build a second, unused form URL (`form_url2`). Only the first URL is requested.
-- The form data is put in the URL query string without URL encoding. That's why the `+` signs arrive as spaces.
-- `OLogger.state_type_map` has no code for Tux's `riding` and `win_inside_igloo` states. An event logged in those states raises an error and is dropped.
-- Events after the 6th (last) checkpoint, i.e. the final stretch to the end goal, are never uploaded. Reaching the goal goes straight to the Thank You screen without sending anything.
